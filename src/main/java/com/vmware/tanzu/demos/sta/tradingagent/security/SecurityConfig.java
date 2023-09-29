@@ -22,8 +22,8 @@ import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedCli
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration(proxyBeanMethods = false)
-@EnableWebSecurity
+//@Configuration(proxyBeanMethods = false)
+//@EnableWebSecurity
 class SecurityConfig {
     private final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
