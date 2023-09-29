@@ -1,6 +1,9 @@
 package com.vmware.tanzu.demos.sta.tradingagent.trade;
 
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -12,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
 @Component
@@ -46,8 +50,8 @@ public class Trade {
     @Scheduled(fixedRate = 100)
 
 //    @RequestMapping(value = "/template/products")
-    public void getProductList() {
-//        sellOrBuy(1);
+    public void getProductList() throws UnirestException {
+        //sellOrBuy(1);
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<String> entity = new HttpEntity<String>(headers);
@@ -124,7 +128,7 @@ public class Trade {
 
     }
 
-    private  void buy(double price) {
+    private  void buy(double price) throws UnirestException {
 
         if (cashBalance <= 0 ) {
             return;
@@ -152,7 +156,7 @@ public class Trade {
         System.out.println("buy:" + price + " qty:" + qty + " cash balance " + cashBalance + " portfolio : " + portfolio + " avgBuyPrice: " + avgBuyPrice);
     }
 
-    private  void sell(double price, boolean forcedSell) {
+    private  void sell(double price, boolean forcedSell) throws UnirestException {
 
         if (portfolio <= 0){
             return;
@@ -175,7 +179,7 @@ public class Trade {
     }
 
 
-    public void sellOrBuy(int qty){
+    public void sellOrBuy(int qty) throws UnirestException {
 
 
 
@@ -183,23 +187,13 @@ public class Trade {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(getToken("sta_onionspas","70035d58-03ae-4901-816f-cce2ef045cb0"));
 
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("shares", String.valueOf(qty));
-        body.add("symbol", "aapl");
-        body.add("user", "onionspas");
+        Unirest.setTimeouts(0, 0);
+        HttpResponse<String> response = Unirest.post("https://sta.az.run.withtanzu.com/api/v1/bids")
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer eyJraWQiOiJhdXRoc2VydmVyLXNpZ25pbmcta2V5IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJzdGFfb25pb25zcGFzIiwiYXVkIjoic3RhX29uaW9uc3BhcyIsIm5iZiI6MTY5NTk4MTM1MSwic2NvcGUiOlsiYmlkIl0sImlzcyI6Imh0dHBzOi8vbG9naW4uc3NvLmF6LnJ1bi53aXRodGFuenUuY29tIiwiZXhwIjoxNjk2MDI0NTUxLCJpYXQiOjE2OTU5ODEzNTF9.o5kgoeL74Ybv3nelgTiXy0Dgm28LUNo8ghccA3E1wrqWrWuWTdaiX4DE7FFqRqWiUMJ7aXffdYFK_3au-MAWSeUauQ1LjjVN90hNbyV-sUil57zeI3JbIYqhzpFEcuWa1f5eA3u0m2-2_P1575qIKB0Bo7O7EY46Un9-IXZ6D474yVi7O9nNy2W81d_RDiDJmWLLyIkHG_EcfpLox9SVVhvLi_aG_0OPDzOpO_UIJtf_Qnc1ByS0QBRPn2X9T3K8V6kemHazk2u9eVJyV4IucFQ4JR2sAjNgqltYSgK7RnDt2kDrTGoozr0yUaekCBC_XZwldzaldCi58YZoDyQFDg")
+                .body("{\r\n  \"shares\": "+qty+",\r\n  \"symbol\": \"aapl\",\r\n  \"user\": \"onionspas\"\r\n}")
+                .asString();
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(
-                "https://sta.az.run.withtanzu.com/api/v1/bids",
-                request,
-                String.class);
-
-        if (response.getStatusCode().is2xxSuccessful()) {
-            // Payment link created successfully
-        } else {
-            throw new RuntimeException("Failed to create payment link: " + response.getStatusCode());
-        }
     }
 
 
