@@ -44,8 +44,10 @@ public class Trade {
     private static double lastSell = 0;
 
     @Scheduled(fixedRate = 100)
+
 //    @RequestMapping(value = "/template/products")
     public void getProductList() {
+//        sellOrBuy(1);
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<String> entity = new HttpEntity<String>(headers);
@@ -53,7 +55,7 @@ public class Trade {
         System.out.println("calling...");
 
 
-        String response = restTemplate.exchange("https://sta.az.run.withtanzu.com/api/v1/stocks/amzn", HttpMethod.GET, entity, String.class).getBody();
+        String response = restTemplate.exchange("https://sta.az.run.withtanzu.com/api/v1/stocks/aapl", HttpMethod.GET, entity, String.class).getBody();
 
         JSONObject jsonObject = new JSONObject(response);
 
@@ -178,12 +180,12 @@ public class Trade {
 
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(getToken("sta_onionspas","70035d58-03ae-4901-816f-cce2ef045cb0"));
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("shares", String.valueOf(qty));
-        body.add("symbol", "amzn");
+        body.add("symbol", "aapl");
         body.add("user", "onionspas");
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
@@ -208,6 +210,7 @@ public class Trade {
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "client_credentials");
+        body.add("scope","bid");
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
@@ -217,7 +220,8 @@ public class Trade {
                 String.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
+
+            return new JSONObject(response.getBody()).getString("access_token");
         } else {
             throw new RuntimeException("Failed to get token: " + response.getStatusCode());
         }
