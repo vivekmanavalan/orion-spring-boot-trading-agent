@@ -1,0 +1,14 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          sso:
+            client-id: insert-client-id
+            client-secret: insert-client-secret
+            authorization-grant-type: client_credentials
+            scope:
+            - bid
+        provider:
+          sso:
+            issuer-uri: https://login.sso.az.run.withtanzu.com

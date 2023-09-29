@@ -1,0 +1,41 @@
+apiVersion: carto.run/v1alpha1
+kind: Workload
+metadata:
+  name: orion-spring-boot-trading-agent
+  labels:
+    apps.tanzu.vmware.com/workload-type: web
+    apps.tanzu.vmware.com/has-tests: "true"
+    app.kubernetes.io/part-of: orion-spring-boot-trading-agent
+spec:
+  source:
+    git:
+      url:
+      ref:
+        branch: main
+  build:
+    env:
+    - name: BP_JVM_VERSION
+      value: "17"
+  params:
+  - name: annotations
+    value:
+      autoscaling.knative.dev/minScale: "0"
+      autoscaling.knative.dev/maxScale: "1"
+  - name: testing_pipeline_matching_labels
+    value:
+      apps.tanzu.vmware.com/pipeline: test
+      apps.tanzu.vmware.com/language: java
+  env:
+  - name: SPRING_CONFIG_IMPORT
+    value: optional:configtree:${SERVICE_BINDING_ROOT}/config/
+  serviceClaims:
+  - name: config
+    ref:
+      apiVersion: v1
+      kind: Secret
+      name: orion-spring-boot-trading-agent-config
+  - name: sso
+    ref:
+      apiVersion: v1
+      kind: Secret
+      name: orion-spring-boot-trading-agent-oauth2

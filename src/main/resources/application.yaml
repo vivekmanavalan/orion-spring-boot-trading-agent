@@ -1,0 +1,38 @@
+app:
+  marketplace:
+    url: https://sta.az.run.withtanzu.com
+  agent:
+    strategy: buy-lower-stock
+    user: onionspas
+
+spring:
+  application:
+    name: orion-spring-boot-trading-agent
+
+management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name}
+      service: ${spring.application.name}
+      source: ${spring.application.name}-${random.uuid}
+  tracing:
+    # Set to true to forward tracing spans to a local Zipkin instance.
+    enabled: false
+    sampling:
+      probability: 0.1
+  otlp:
+    metrics:
+      export:
+        # Set to true to forward metrics to a local OpenTelemetry collector.
+        enabled: false
+        step: 30s
+logging:
+  pattern:
+    # Include tracing ids in log entries.
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+server:
+  port: ${PORT:8082}

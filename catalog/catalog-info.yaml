@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: orion-spring-boot-trading-agent
+  description: A Spring Boot Trading Agent implementation for Spring Trading App
+  tags:
+  - spring
+  - sta
+  - trading-agent
+  annotations:
+    backstage.io/kubernetes-label-selector: app.kubernetes.io/part-of=orion-spring-boot-trading-agent
+spec:
+  type: service
+  lifecycle: experimental
+  owner: default-team

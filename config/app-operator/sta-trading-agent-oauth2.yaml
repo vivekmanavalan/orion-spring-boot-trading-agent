@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: orion-spring-boot-trading-agent-oauth2
+type: Opaque
+stringData:
+  provider: sandbox
+  type: oauth2
+  client-authentication-method: client_secret_basic
+  authorization-grant-types: client_credentials
+  scope: bid
+  client-id: insert-client-id
+  client-secret: insert-client-secret
+  issuer-uri: insert-issuer-uri
