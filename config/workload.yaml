@@ -9,7 +9,7 @@ metadata:
 spec:
   source:
     git:
-      url:
+      url: https://github.com/vivekmanavalan/orion-spring-boot-trading-agent.git
       ref:
         branch: main
   build:
